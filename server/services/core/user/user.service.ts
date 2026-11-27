@@ -23,8 +23,6 @@ import {
   call,
   BannedError,
   UserStructWithToken,
-  RateLimitError,
-  ServiceUnavailableError,
   SYSTEM_USERID,
 } from 'tailchat-server-sdk';
 import {
@@ -36,9 +34,6 @@ import type { TFunction } from 'i18next';
 import _ from 'lodash';
 import type { UserStruct } from 'tailchat-server-sdk';
 import userLoginLogModel from '../../../models/user/userLoginLog';
-import { getRegistrationIp } from '../../../lib/requestIp';
-import RedisSlowModeCounter from '../chat/slowModeCounter';
-import type { SlowModeRedisClient } from '../chat/slowModeCounter';
 
 const { isValidObjectId, Types } = db;
 
@@ -47,9 +42,6 @@ const { isValidObjectId, Types } = db;
  */
 interface UserService extends TcService, TcDbService<UserDocument, UserModel> {}
 class UserService extends TcService {
-  /** Local fallback while the shared Redis cache is unavailable. */
-  private registrationQuotaFallback = new Map<string, number[]>();
-
   get serviceName() {
     return 'user';
   }
@@ -463,89 +455,6 @@ class UserService extends TcService {
     return this.transformDocuments(ctx, {}, user);
   }
 
-  /**
-   * 普通注册和游客注册共享的 IP 配额
-   */
-  private consumeRegistrationQuotaFallback(
-    ip: string,
-    ctx: TcPureContext<any, { ip?: string }>
-  ) {
-    const now = Date.now();
-    const entries = (this.registrationQuotaFallback.get(ip) ?? []).filter(
-      (timestamp) => timestamp > now - 86400_000
-    );
-    for (const [windowMs, maxMessages] of [
-      [3600_000, config.registrationIpLimit.hourly],
-      [86400_000, config.registrationIpLimit.daily],
-    ]) {
-      const inWindow = entries.filter((timestamp) => timestamp > now - windowMs);
-      if (inWindow.length >= maxMessages) {
-        const oldest = Math.min(...inWindow);
-        throw new RateLimitError(
-          ctx.meta.t('注册过于频繁，请稍后再试'),
-          'REGISTER_IP_LIMITED',
-          {
-            retryAfterMs: oldest + windowMs - now,
-            windowSeconds: windowMs / 1000,
-          }
-        );
-      }
-    }
-    entries.push(now);
-    this.registrationQuotaFallback.set(ip, entries);
-  }
-
-  private async consumeRegistrationQuota(
-    ctx: TcPureContext<any, { ip?: string }>
-  ) {
-    const ip = getRegistrationIp(ctx.meta.ip);
-    if (!ip) {
-      throw new ServiceUnavailableError();
-    }
-
-    const cacher = this.broker.cacher as unknown as
-      | { client?: SlowModeRedisClient & { status: string }; prefix?: string }
-      | undefined;
-
-    // Keep registration available if the shared Redis cache is absent or reconnecting.
-    // The local fallback still enforces the same per-IP hourly and daily limits.
-    if (!cacher?.client || cacher.client.status !== 'ready') {
-      return this.consumeRegistrationQuotaFallback(ip, ctx);
-    }
-
-    const counter = new RedisSlowModeCounter(
-      cacher.client,
-      `${cacher.prefix ?? 'tailchat:'}registration:v1`
-    );
-    try {
-      for (const [intervalSeconds, maxMessages] of [
-        [3600, config.registrationIpLimit.hourly],
-        [86400, config.registrationIpLimit.daily],
-      ]) {
-        const result = await counter.consume({
-          converseId: `${this.broker.namespace ?? ''}:${config.apiUrl}`,
-          userId: ip,
-          intervalSeconds,
-          maxMessages,
-        });
-        if (!result.accepted) {
-          throw new RateLimitError(
-            ctx.meta.t('注册过于频繁，请稍后再试'),
-            'REGISTER_IP_LIMITED',
-            {
-              retryAfterMs: result.retryAfterMs,
-              windowSeconds: intervalSeconds,
-            }
-          );
-        }
-      }
-    } catch (error) {
-      if (error instanceof RateLimitError) throw error;
-      this.logger.warn('Registration Redis quota unavailable; using local fallback');
-      return this.consumeRegistrationQuotaFallback(ip, ctx);
-    }
-  }
-
   /** 用户注册 */
   async register(
     ctx: TcPureContext<
@@ -565,7 +474,6 @@ class UserService extends TcService {
     if (config.feature.disableUserRegister) {
       throw new Error(t('服务器不允许新用户注册'));
     }
-    await this.consumeRegistrationQuota(ctx);
     await this.validateEntity(params);
     await this.validateRegisterParams(params, t);
 
@@ -688,7 +596,6 @@ class UserService extends TcService {
     if (config.feature.disableGuestLogin) {
       throw new Error(t('服务器不允许游客登录'));
     }
-    await this.consumeRegistrationQuota(ctx);
 
     const discriminator = await this.adapter.model.generateDiscriminator(
       nickname
