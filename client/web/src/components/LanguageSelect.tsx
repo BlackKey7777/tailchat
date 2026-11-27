@@ -6,7 +6,7 @@ import type { AllowedLanguage } from 'tailchat-shared';
 type LanguageSelectProps = Omit<SelectProps, 'value' | 'onChange'>;
 
 /**
- * 语言切换选择框
+ * Language selector
  */
 export const LanguageSelect: React.FC<LanguageSelectProps> = React.memo(
   (props) => {
@@ -30,6 +30,7 @@ export const LanguageSelect: React.FC<LanguageSelectProps> = React.memo(
       >
         <Select.Option value="zh-CN">简体中文</Select.Option>
         <Select.Option value="en-US">English</Select.Option>
+        <Select.Option value="ru-RU">Русский</Select.Option>
       </Select>
     );
   }
