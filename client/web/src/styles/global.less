@@ -375,3 +375,102 @@ body > #app {
     padding-bottom: 96px;
   }
 }
+
+
+/* KIVO: final mobile viewport and navigation alignment */
+@media (max-width: 767px) {
+  html, body, body > #app, #app, #tailchat-app {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  #tailchat-app .kivo-bottom-nav {
+    box-sizing: border-box;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    height: 72px;
+    padding: 6px 8px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: center;
+    justify-items: stretch;
+    gap: 2px;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item > div,
+  #tailchat-app .kivo-bottom-nav-item .px-3,
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-personal"] {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    min-height: 42px;
+    margin: 0;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .absolute {
+    display: none !important;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-testid="inbox"],
+  #tailchat-app .kivo-bottom-nav-item [data-testid="search"] {
+    width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-testid="inbox"] svg,
+  #tailchat-app .kivo-bottom-nav-item [data-testid="search"] svg,
+  #tailchat-app .kivo-bottom-nav-item > svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .kivo-bottom-nav-label {
+    width: 100%;
+    font-size: 10px;
+    line-height: 12px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item:has(.rounded-lg) {
+    background: rgba(167, 139, 250, .10);
+  }
+
+  #tailchat-app .flex.flex-1.overflow-hidden {
+    min-width: 0;
+    width: 100%;
+    padding-bottom: 84px;
+  }
+
+  #tailchat-app [data-tc-role="content-personal"],
+  #tailchat-app [data-tc-role="content-inbox"] {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
