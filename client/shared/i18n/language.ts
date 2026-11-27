@@ -5,40 +5,30 @@ import { AllowedLanguage, setLanguage as setI18NLanguage } from './index';
 import { getStorage, useStorage } from '../manager/storage';
 import { LANGUAGE_KEY } from '../utils/consts';
 
-export const defaultLanguage = 'en-US';
+export const defaultLanguage: AllowedLanguage = 'en-US';
 
 function getNavigatorLanguage(): AllowedLanguage {
-  if (!navigator.language) {
-    return defaultLanguage;
-  }
-
-  return navigator.language.startsWith('zh') ? 'zh-CN' : 'en-US';
+  if (!navigator.language) return defaultLanguage;
+  if (navigator.language.toLowerCase().startsWith('ru')) return 'ru-RU';
+  return navigator.language.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en-US';
 }
 
-/**
- * Get current language
- */
+/** Get current language. */
 async function getLanguage(): Promise<string> {
   return await getStorage().get(LANGUAGE_KEY, getNavigatorLanguage());
 }
 
-/**
- * Current language management hook
- */
+/** Current language management hook. */
 export function useLanguage() {
   const [language, { save }] = useStorage<AllowedLanguage>(
     LANGUAGE_KEY,
     defaultLanguage
   );
-
   const originLanguageRef = useRef<string>();
 
   const setLanguage = useCallback(
     async (newLanguage: AllowedLanguage) => {
-      if (_isNil(originLanguageRef.current)) {
-        originLanguageRef.current = language;
-      }
-
+      if (_isNil(originLanguageRef.current)) originLanguageRef.current = language;
       save(newLanguage);
       await setI18NLanguage(newLanguage);
     },
@@ -46,35 +36,26 @@ export function useLanguage() {
   );
 
   const isChanged = useMemo(() => {
-    if (_isNil(originLanguageRef.current)) {
-      return false;
-    }
-
+    if (_isNil(originLanguageRef.current)) return false;
     return originLanguageRef.current !== language;
   }, [language]);
 
   return { language, setLanguage, isChanged };
 }
 
-/**
- * Storage language
- * @param lang Language Code
- */
+/** Persist selected language. */
 export async function saveLanguage(lang: string) {
   await getStorage().save(LANGUAGE_KEY, lang);
 }
 
-/**
- * i18n language detection middleware
- */
+/** i18next language detection middleware. */
 export const languageDetector: LanguageDetectorAsyncModule = {
   type: 'languageDetector',
   async: true,
   init: () => {},
   detect: async (callback) => {
     try {
-      const language = await getLanguage();
-      callback(language);
+      callback(await getLanguage());
     } catch (error) {
       callback(defaultLanguage);
     }
