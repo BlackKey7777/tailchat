@@ -193,3 +193,79 @@ body > #app {
     radial-gradient(ellipse at 88% 90%, rgba(16, 185, 129, .16), transparent 34%),
     linear-gradient(135deg, #090a18 0%, #11102a 52%, #071b1c 100%);
 }
+
+/* KIVO mobile bottom navigation */
+.kivo-bottom-nav {
+  display: none;
+}
+@media (max-width: 767px) {
+  .kivo-bottom-nav {
+    position: fixed;
+    z-index: 1000;
+    left: 12px;
+    right: 12px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    height: 68px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 4px;
+    border: 1px solid rgba(190, 178, 255, .22);
+    border-radius: 22px;
+    background: linear-gradient(120deg, rgba(28, 22, 53, .94), rgba(11, 34, 39, .94));
+    box-shadow: 0 12px 38px rgba(0,0,0,.42), 0 0 24px rgba(139,92,246,.13);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+  }
+  .kivo-bottom-nav-item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .kivo-bottom-nav-item > * {
+    padding: 0 !important;
+  }
+  .kivo-bottom-nav-item [data-tc-role="navbar-personal"] > div,
+  .kivo-bottom-nav-item [data-testid="inbox"] {
+    margin: 0 !important;
+  }
+  .kivo-bottom-nav-item [data-tc-role="navbar-personal"] > div > div,
+  .kivo-bottom-nav-item [data-testid="inbox"] > div,
+  .kivo-bottom-nav-item [data-testid="search"] > div {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 15px !important;
+    background: rgba(255,255,255,.055);
+  }
+  .kivo-bottom-nav-item [data-tc-role="navbar-personal"] > div > div:hover,
+  .kivo-bottom-nav-item [data-testid="inbox"] > div:hover,
+  .kivo-bottom-nav-item [data-testid="search"] > div:hover {
+    background: rgba(167,139,250,.2);
+  }
+  .kivo-bottom-nav-item [data-tc-role="navbar-settings"] {
+    padding: 0 !important;
+  }
+  .kivo-bottom-nav-item > div > .ant-badge,
+  .kivo-bottom-nav-item .ant-badge {
+    display: flex;
+    justify-content: center;
+  }
+  .kivo-bottom-nav-item [data-tc-role="navbar-personal"] img {
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+  }
+  #tailchat-app .kivo-bottom-nav-item .text-3xl {
+    font-size: 25px;
+  }
+  #tailchat-app [data-tc-role="navbar"] {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+  #tailchat-app .flex.flex-1.overflow-hidden {
+    padding-bottom: 88px;
+  }
+}
