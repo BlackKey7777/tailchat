@@ -22,7 +22,7 @@ async function getLanguage(): Promise<string> {
 export function useLanguage() {
   const [language, { save }] = useStorage<AllowedLanguage>(
     LANGUAGE_KEY,
-    defaultLanguage
+    getNavigatorLanguage()
   );
   const originLanguageRef = useRef<string>();
 
