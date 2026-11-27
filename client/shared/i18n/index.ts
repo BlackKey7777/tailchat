@@ -81,7 +81,10 @@ export const t: TFunction = (
 };
 
 /** Localized text for the active interface language. */
-export function localTrans(trans: Record<AllowedLanguage, string>) {
+export function localTrans(
+  trans: Partial<Record<AllowedLanguage, string>> &
+    Record<'zh-CN' | 'en-US', string>
+) {
   const lang = i18next.language as AllowedLanguage;
   return trans[lang] ?? trans['en-US'] ?? trans['zh-CN'];
 }
