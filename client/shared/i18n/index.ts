@@ -11,19 +11,17 @@ import {
 import { crc32 } from 'crc';
 import { defaultLanguage, languageDetector } from './language';
 import { useState, useEffect } from 'react';
-import HttpApi from 'i18next-http-backend'; // https://github.com/i18next/i18next-http-backend
+import HttpApi from 'i18next-http-backend';
 
-/**
- * 允许出现的语言
- */
-export type AllowedLanguage = 'zh-CN' | 'en-US';
+/** Supported interface languages. */
+export type AllowedLanguage = 'zh-CN' | 'en-US' | 'ru-RU';
 
 i18next
   .use(languageDetector)
   .use(HttpApi)
   .use(initReactI18next)
   .init({
-    fallbackLng: defaultLanguage,
+    fallbackLng: 'en-US',
     load: 'currentOnly',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
@@ -33,9 +31,7 @@ i18next
       },
     },
     react: {
-      // Reference: https://react.i18next.com/latest/trans-component#i-18-next-options
       hashTransKey(defaultValue: string) {
-        // return a key based on defaultValue or if you prefer to just remind you should set a key return false and throw an error
         return `k${crc32(defaultValue).toString(16)}`;
       },
     },
@@ -43,9 +39,7 @@ i18next
 
 type TFunctionResult = string | React.ReactNode;
 
-// Fork from i18next
 interface TFunction {
-  // basic usage
   <TKeys extends TFunctionKeys = string>(key: TKeys): string;
   <
     TResult extends TFunctionResult = string,
@@ -55,7 +49,6 @@ interface TFunction {
     key: TKeys,
     options?: TOptions<TInterpolationMap> | string
   ): TResult;
-  // overloaded usage
   <
     TResult extends TFunctionResult = string,
     TKeys extends TFunctionKeys = string,
@@ -67,9 +60,7 @@ interface TFunction {
   ): TResult;
 }
 
-/**
- * 国际化翻译
- */
+/** Internationalized translation helper. */
 export const t: TFunction = (
   key: string,
   defaultValue?: string,
@@ -80,7 +71,7 @@ export const t: TFunction = (
     let words = i18next.t(hashKey, defaultValue, options);
     if (words === hashKey) {
       words = key;
-      console.info(`[i18n] 翻译缺失: [${hashKey}]${key}`);
+      console.info(`[i18n] Missing translation: [${hashKey}]${key}`);
     }
     return words;
   } catch (err) {
@@ -89,71 +80,45 @@ export const t: TFunction = (
   }
 };
 
-/**
- * 本地翻译
- * @example
- * localTrans({'zh-CN': '你好', 'en-US': 'Hello'});
- *
- * @param trans 翻译对象
- */
+/** Localized text for the active interface language. */
 export function localTrans(trans: Record<AllowedLanguage, string>) {
   const lang = i18next.language as AllowedLanguage;
-  return trans[lang] ?? trans['zh-CN'] ?? trans['en-US'];
+  return trans[lang] ?? trans['en-US'] ?? trans['zh-CN'];
 }
 
-/**
- * 设置i18next的语言
- */
+/** Change i18next language. */
 export async function setLanguage(lang: AllowedLanguage): Promise<void> {
   return new Promise((resolve, reject) => {
     i18next.changeLanguage(lang, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
+      if (err) reject(err);
+      else resolve();
     });
   });
 }
 
-/**
- * 获取i18n语言
- */
+/** Get current i18n language. */
 export function getLanguage(): AllowedLanguage {
   return i18next.language as AllowedLanguage;
 }
 
-/**
- * 语言加载
- */
+/** Subscribe to language resource loading. */
 export function onLanguageLoaded(
   cb: (loaded: { [language: string]: { [namespace: string]: boolean } }) => void
 ) {
   i18next.on('loaded', cb);
 }
 
-/**
- * 监听语言变更
- */
+/** Subscribe to language changes. */
 export function onLanguageChanged(cb: (lang: string) => void) {
   i18next.on('languageChanged', cb);
 }
 
-/**
- * fork from i18next/react-i18next/-/blob/src/useTranslation.js
- * i18n for react 使用hooks
- */
+/** React hook wrapper for i18next. */
 export function useTranslation() {
   const { t: i18nT, ready } = useI18NTranslation();
-
   const [_t, _setT] = useState<TFunction>(() => t);
   useEffect(() => {
-    _setT(
-      () =>
-        (...args: any[]) =>
-          (t as any)(...args)
-    );
+    _setT(() => (...args: any[]) => (t as any)(...args));
   }, [i18nT]);
-
   return { t: _t, ready };
 }
