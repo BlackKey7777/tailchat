@@ -56,6 +56,12 @@ export const PersonalSidebar: React.FC = React.memo(() => {
 
       <div className="p-2 overflow-auto">
         <SidebarItem
+          name="Мой профиль"
+          icon={<Icon icon="mdi:account-circle-outline" />}
+          to="/main/personal/profile"
+        />
+
+        <SidebarItem
           name={t('好友')}
           icon={<Icon icon="mdi:account-multiple" />}
           to="/main/personal/friends"
