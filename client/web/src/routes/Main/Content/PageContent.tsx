@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useSidebarContext } from '../SidebarContext';
 import _isNil from 'lodash/isNil';
 import { EventTypes, useDrag, UserDragConfig } from '@use-gesture/react';
@@ -73,15 +73,6 @@ export const PageContent: React.FC<PropsWithChildren<PageContentProps>> =
     const { sidebar, children } = props;
     const { showSidebar, setShowSidebar } = useSidebarContext();
     const isMobile = useIsMobile();
-    const handleHideSidebar = useCallback(
-      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.stopPropagation();
-        e.preventDefault();
-        setShowSidebar(false);
-      },
-      []
-    );
-
     useWatch([isMobile], () => {
       if (isMobile === false) {
         // 如果不为移动端, 则一定显示侧边栏
