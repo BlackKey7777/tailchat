@@ -5,21 +5,18 @@ const esbuild = require('esbuild');
 
 console.log('Scanning Translation in src folder...');
 
-// 扫描语言
-const lngs = ['zh-CN', 'en-US'];
+// Languages included in the generated public locales directory.
+const lngs = ['zh-CN', 'en-US', 'ru-RU'];
 
 module.exports = {
   input: [
     'web/**/*.{ts,tsx}',
     'shared/**/*.{ts,tsx}',
-    // 'src/shared/i18n/__internal__/__scan__.ts',
-    // Use ! to filter out files or directories
     '!src/**/*.spec.{js,jsx,ts,tsx}',
     '!web/e2e/**/*.test.{ts,tsx}',
-    // '!src/shared/i18n/**',
     '!**/node_modules/**',
   ],
-  output: './', //输出目录
+  output: './',
   options: {
     debug: false,
     sort: true,
@@ -28,22 +25,21 @@ module.exports = {
     lngs,
     defaultLng: 'zh-CN',
     resource: {
-      loadPath: './src/shared/i18n/langs/{{lng}}/{{ns}}.json', //输入路径
-      savePath: './src/shared/i18n/langs/{{lng}}/{{ns}}.json', //输出路径
+      loadPath: './src/shared/i18n/langs/{{lng}}/{{ns}}.json',
+      savePath: './src/shared/i18n/langs/{{lng}}/{{ns}}.json',
       jsonIndent: 2,
       lineEnding: '\n',
       endWithEmptyTrans: true,
     },
     removeUnusedKeys: true,
-    nsSeparator: false, // namespace separator
-    keySeparator: false, // key separator
+    nsSeparator: false,
+    keySeparator: false,
     interpolation: {
       prefix: '{{',
       suffix: '}}',
     },
   },
   transform: async function customTransform(file, enc, done) {
-    //自己通过该函数来加工key或value
     'use strict';
     const parser = this.parser;
     const content = await fs.readFile(file.path, enc);
@@ -58,7 +54,6 @@ module.exports = {
       }
     );
 
-    // 如果是 tsx 文件，则使用esbuild转换成jsx后再输入
     if (path.extname(file.path) === '.tsx') {
       const { code } = await esbuild.transform(content, {
         jsx: 'preserve',
@@ -68,13 +63,7 @@ module.exports = {
         code,
         { component: 'Trans', i18nKey: 'i18nKey' },
         (key, options) => {
-          /**
-           * 处理scanner与react-i18next算法不一致导致的问题
-           * Reference: https://github.com/i18next/i18next-scanner/issues/125
-           */
           let sentence = options.defaultValue;
-          // remove <Tag> surrounding interopations to match i18next simpilied result
-          // @see https://github.com/i18next/react-i18next/blob/master/CHANGELOG.md#800
           sentence = sentence.replace(/<(\d+)>{{(\w+)}}<\/\1>/g, '{{$2}}');
           sentence = sentence.replace(/\s+/g, ' ');
           options.defaultValue = sentence;
