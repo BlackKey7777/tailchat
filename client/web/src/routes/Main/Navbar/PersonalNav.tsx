@@ -32,7 +32,7 @@ export const PersonalNav: React.FC = React.memo(() => {
     <div data-tc-role="navbar-personal">
       <NavbarNavItem
         name={t('我')}
-        to={'/main/personal'}
+        to={'/main/personal/profile'}
         showPill={true}
         badge={badge}
       >
