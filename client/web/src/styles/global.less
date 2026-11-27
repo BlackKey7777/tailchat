@@ -168,3 +168,28 @@ body {
   }
   #tailchat-app .ant-btn { min-height: 40px; }
 }
+
+
+/* KIVO brand layer: apply to the actual HTML mount point as well as the legacy app root. */
+html, body, body > #app {
+  min-height: 100%;
+  background-color: #080914;
+  background-image:
+    radial-gradient(ellipse at 8% 8%, rgba(139, 92, 246, .28), transparent 38%),
+    radial-gradient(ellipse at 92% 88%, rgba(16, 185, 129, .20), transparent 36%),
+    linear-gradient(135deg, #090a18 0%, #11102a 48%, #071b1c 100%);
+  background-attachment: fixed;
+}
+
+body > #app {
+  min-height: 100vh;
+}
+
+#app #tailchat-app,
+#app .entry-left,
+#app .tc-background {
+  background-image:
+    radial-gradient(ellipse at 12% 10%, rgba(139, 92, 246, .22), transparent 36%),
+    radial-gradient(ellipse at 88% 90%, rgba(16, 185, 129, .16), transparent 34%),
+    linear-gradient(135deg, #090a18 0%, #11102a 52%, #071b1c 100%);
+}
