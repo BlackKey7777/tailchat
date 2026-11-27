@@ -9,6 +9,7 @@ import { PersonalConverse } from './Converse';
 import { FriendPanel } from './Friends';
 import { PluginsPanel } from './Plugins';
 import { PersonalSidebar } from './Sidebar';
+import { PersonalProfile } from './Profile';
 import { useGlobalConfigStore } from 'tailchat-shared';
 
 export const Personal: React.FC = React.memo(() => {
@@ -27,6 +28,7 @@ export const Personal: React.FC = React.memo(() => {
   return (
     <PageContent data-tc-role="content-personal" sidebar={<PersonalSidebar />}>
       <Routes>
+        <Route path="/profile" element={<PersonalProfile />} />
         <Route path="/friends" element={<FriendPanel />} />
         {!disablePluginStore && (
           <Route path="/plugins" element={<PluginsPanel />} />
@@ -49,7 +51,7 @@ export const Personal: React.FC = React.memo(() => {
           element={
             <Navigate
               to={
-                lastVisitPanelUrl ? lastVisitPanelUrl : '/main/personal/friends'
+                lastVisitPanelUrl ? lastVisitPanelUrl : '/main/personal/profile'
               }
             />
           }
