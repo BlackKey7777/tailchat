@@ -1,9 +1,10 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect, useRef } from 'react';
 import { useSidebarContext } from '../SidebarContext';
 import _isNil from 'lodash/isNil';
 import { EventTypes, useDrag, UserDragConfig } from '@use-gesture/react';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import clsx from 'clsx';
+import { useLocation } from 'react-router';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { ReactDOMAttributes } from '@use-gesture/react/dist/declarations/src/types';
 import { useWatch } from 'tailchat-shared';
@@ -73,6 +74,16 @@ export const PageContent: React.FC<PropsWithChildren<PageContentProps>> =
     const { sidebar, children } = props;
     const { showSidebar, setShowSidebar } = useSidebarContext();
     const isMobile = useIsMobile();
+    const location = useLocation();
+    const previousPath = useRef(location.pathname);
+
+    useEffect(() => {
+      if (previousPath.current !== location.pathname && isMobile) {
+        setShowSidebar(false);
+      }
+      previousPath.current = location.pathname;
+    }, [location.pathname, isMobile, setShowSidebar]);
+
     useWatch([isMobile], () => {
       if (isMobile === false) {
         // 如果不为移动端, 则一定显示侧边栏
