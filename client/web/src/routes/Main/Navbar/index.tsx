@@ -25,10 +25,22 @@ export const Navbar: React.FC = React.memo(() => {
         aria-label="Основная навигация"
         className="kivo-bottom-nav"
       >
-        <div className="kivo-bottom-nav-item"><PersonalNav /></div>
-        <div className="kivo-bottom-nav-item"><InboxNav /></div>
-        <div className="kivo-bottom-nav-item"><QuickSwitcherNav /></div>
-        <div className="kivo-bottom-nav-item"><SettingBtn /></div>
+        <div className="kivo-bottom-nav-item">
+          <PersonalNav />
+          <span className="kivo-bottom-nav-label">Личное</span>
+        </div>
+        <div className="kivo-bottom-nav-item">
+          <InboxNav />
+          <span className="kivo-bottom-nav-label">Входящие</span>
+        </div>
+        <div className="kivo-bottom-nav-item">
+          <QuickSwitcherNav />
+          <span className="kivo-bottom-nav-label">Поиск</span>
+        </div>
+        <div className="kivo-bottom-nav-item">
+          <SettingBtn />
+          <span className="kivo-bottom-nav-label">Настройки</span>
+        </div>
       </nav>
     );
   }
