@@ -92,40 +92,29 @@ export const PageContent: React.FC<PropsWithChildren<PageContentProps>> =
     const sidebarEl = _isNil(sidebar) ? null : (
       <div
         className={clsx(
-          'bg-sidebar-light dark:bg-sidebar-dark flex-shrink-0 transition-width w-60'
+          'bg-sidebar-light dark:bg-sidebar-dark flex-shrink-0 transition-width',
+          isMobile ? 'w-full h-full' : 'w-60'
         )}
       >
         {props.sidebar}
       </div>
     );
 
-    // 是否显示遮罩层
-    const showMask =
-      isMobile === true && showSidebar === true && !_isNil(sidebarEl);
-
-    const contentMaskEl = showMask ? (
-      <div
-        className="absolute right-0 top-0 bottom-0 z-10"
-        style={{ width: 'calc(100% - 15rem)' }} // 15rem is "w-60" which sidebar with
-        onClick={handleHideSidebar}
-      />
-    ) : null;
-
+    // На телефоне боковая панель и содержимое занимают один экран,
+    // а не показываются рядом с горизонтальным переполнением.
     const contentEl = children;
 
     const el = (
       <ErrorBoundary>
         {sidebarEl}
 
-        {contentMaskEl}
-
         <div
           className={clsx(
-            'flex flex-auto bg-content-light dark:bg-content-dark overflow-hidden',
+            'flex flex-auto min-w-0 bg-content-light dark:bg-content-dark overflow-hidden',
             isMobile &&
-              'transform left-0 w-full h-full absolute transition-transform',
+              'transform inset-0 w-full h-full absolute transition-transform duration-200',
             isMobile && {
-              'translate-x-60': showSidebar,
+              'translate-x-full': showSidebar,
               'translate-x-0': !showSidebar,
             }
           )}
@@ -135,8 +124,8 @@ export const PageContent: React.FC<PropsWithChildren<PageContentProps>> =
 
           <div
             className={clsx('flex relative w-full', {
-              'overflow-auto': !showMask,
-              'overflow-hidden': showMask,
+              'overflow-auto': !showSidebar || !isMobile,
+              'overflow-hidden': showSidebar && isMobile,
             })}
           >
             <ErrorBoundary>{contentEl}</ErrorBoundary>
