@@ -269,3 +269,109 @@ body > #app {
     padding-bottom: 88px;
   }
 }
+
+
+/* KIVO mobile navigation labels and touch targets */
+@media (max-width: 767px) {
+  #tailchat-app .kivo-bottom-nav {
+    height: 76px;
+    padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+    align-items: stretch;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item {
+    min-width: 0;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border-radius: 15px;
+    color: #a7a5c2;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 39px;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .kivo-bottom-nav-label {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    color: #aaa8c5;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 13px;
+    letter-spacing: .01em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item:active {
+    background: rgba(167, 139, 250, .15);
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-personal"] > div > div,
+  #tailchat-app .kivo-bottom-nav-item [data-testid="inbox"] > div,
+  #tailchat-app .kivo-bottom-nav-item [data-testid="search"] > div {
+    width: 40px !important;
+    height: 39px !important;
+    min-height: 39px;
+    border-radius: 13px !important;
+    background: transparent;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-personal"] > div > div.rounded-lg,
+  #tailchat-app .kivo-bottom-nav-item [data-testid="inbox"] > div.rounded-lg {
+    background: rgba(167, 139, 250, .22);
+    box-shadow: inset 0 0 0 1px rgba(190, 178, 255, .18);
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .kivo-bottom-nav-label {
+    transition: color .18s ease;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item:has(.rounded-lg) .kivo-bottom-nav-label {
+    color: #e4d9ff;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-settings"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 39px;
+    padding: 0 !important;
+    border-radius: 13px;
+    background: transparent;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-settings"]:active,
+  #tailchat-app .kivo-bottom-nav-item [data-tc-role="navbar-settings"]:focus {
+    background: rgba(167, 139, 250, .22);
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .text-3xl {
+    font-size: 23px;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .ant-badge {
+    line-height: 1;
+  }
+
+  #tailchat-app .kivo-bottom-nav-item .ant-badge-count {
+    top: 2px;
+    right: 2px;
+    transform: translate(50%, -50%);
+  }
+
+  #tailchat-app .flex.flex-1.overflow-hidden {
+    padding-bottom: 96px;
+  }
+}
