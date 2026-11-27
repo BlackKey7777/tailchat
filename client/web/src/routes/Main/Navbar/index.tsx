@@ -10,44 +10,51 @@ import { ReactQueryDevBtn } from './ReactQueryDevBtn';
 import { pluginCustomPanel } from '@/plugin/common';
 import { NavbarCustomNavItem } from './CustomNavItem';
 import { QuickSwitcherNav } from './QuickSwitcherNav';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 /**
- * 导航栏组件
+ * Навигация KIVO: вертикальная на десктопе, нижняя панель на телефонах.
  */
 export const Navbar: React.FC = React.memo(() => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <nav
+        data-tc-role="navbar"
+        aria-label="Основная навигация"
+        className="kivo-bottom-nav"
+      >
+        <div className="kivo-bottom-nav-item"><PersonalNav /></div>
+        <div className="kivo-bottom-nav-item"><InboxNav /></div>
+        <div className="kivo-bottom-nav-item"><QuickSwitcherNav /></div>
+        <div className="kivo-bottom-nav-item"><SettingBtn /></div>
+      </nav>
+    );
+  }
+
   return (
     <div
       data-tc-role="navbar"
       className="w-18 mobile:zoom-4/5 bg-navbar-light dark:bg-navbar-dark flex flex-col justify-start items-center pt-4 pb-4"
     >
       <MobileMenuBtn />
-
-      {/* Navbar */}
       <div className="flex-1 w-full overflow-hidden flex flex-col">
         <div className="space-y-2">
           <PersonalNav />
-
           <InboxNav />
-
           <QuickSwitcherNav />
-
           {pluginCustomPanel
             .filter((p) => p.position === 'navbar-personal')
             .map((p) => (
               <NavbarCustomNavItem key={p.name} panelInfo={p} withBg={true} />
             ))}
         </div>
-
-        <div className="px-3">
-          <Divider />
-        </div>
-
-        {/* 如果导航栏高度不够就缩减群组列表的高度 */}
+        <div className="px-3"><Divider /></div>
         <div className="overflow-y-hidden hover:overflow-y-smart scroll overflow-x-hidden thin-scrollbar">
           <GroupNav />
         </div>
       </div>
-
       <div
         data-tc-role="navbar-settings"
         className="flex flex-col items-center space-y-2 pt-3"
@@ -57,14 +64,8 @@ export const Navbar: React.FC = React.memo(() => {
           .map((p) => (
             <NavbarCustomNavItem key={p.name} panelInfo={p} withBg={false} />
           ))}
-
-        {/* React Query 的调试面板 */}
         <ReactQueryDevBtn />
-
-        {/* 应用(PWA)安装按钮 */}
         <InstallBtn />
-
-        {/* 设置按钮 */}
         <SettingBtn />
       </div>
     </div>
