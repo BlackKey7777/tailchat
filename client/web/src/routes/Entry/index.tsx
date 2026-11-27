@@ -13,11 +13,11 @@ const EntryRoute = React.memo(() => {
   useRecordMeasure('appEntryRenderStart');
 
   return (
-    <div className="h-full flex flex-row">
+    <div className="min-h-screen w-full flex flex-row">
       <div
         className={clsx(
           styles.entryLeft,
-          'entry-left w-142 mobile:w-full pt-40 px-4 bg-gray-600 min-h-full flex justify-center bg-repeat-y z-10'
+          'entry-left w-142 mobile:w-full min-h-screen h-auto pt-40 mobile:pt-8 pb-10 px-4 bg-gray-600 flex justify-center bg-repeat-y z-10'
         )}
         style={{ backgroundImage: `url(${loginPatternUrl})` }}
       >
